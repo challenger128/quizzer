@@ -51,8 +51,6 @@ const AddUpdateQuizModal = ({
     };
     try {
       if (quizToUpdate) {
-        console.log(quizId)
-        console.log(quizId)
         await axiosInstance.put(`quizzes/{quiz.id}?quiz_id=${quizId}`, quizData);
         toast({
           title: "Тест обновлен",
@@ -122,15 +120,15 @@ const AddUpdateQuizModal = ({
         <ModalBody>
         <FormControl mb={3}>
           <FormLabel>Название</FormLabel>
-          <Input {...register("title", { required: true, minLength: 5, maxLength: 50 })} />
+          <Input {...register("title", { required: true, minLength: 1, maxLength: 255 })} />
                 { errors.title && (
                   <span style={{ color: "rgb(245, 101, 101)" }}>Название должно содержать от 1 до 255 символов</span>)}
         </FormControl>
 
         <FormControl mb={3}>
             <FormLabel>Описание</FormLabel>
-                <Input {...register("description", { required: true, minLength: 5, maxLength: 50 })} />
-                { errors.title && (
+                <Input {...register("description", { required: true, minLength: 1, maxLength: 1023 })} />
+                { errors.description && (
                   <span style={{ color: "rgb(245, 101, 101)" }}>Описание должно содержать от 1 до 1023 символов</span>)}
             </FormControl>
             <FormControl mb={3}>
@@ -187,7 +185,6 @@ const AddUpdateQuizModal = ({
                         </ModalFooter>
             </ModalContent>
         </Modal>
-);
-};
+);};
 
 export default AddUpdateQuizModal;
