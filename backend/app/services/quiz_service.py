@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import List
 from app.models.user_model import User
 from app.models.quiz_model import Quiz
-from app.schemas.quiz_schema import QuizCreate, QuizOut, QuizUpdate
+from app.schemas.quiz_schema import QuizCreateUpdate, QuizOut
 
 
 class QuizService:
@@ -12,7 +12,7 @@ class QuizService:
         return quizzes
     
     @staticmethod
-    async def create_quiz(data: QuizCreate, user: User) -> Quiz:
+    async def create_quiz(data: QuizCreateUpdate, user: User) -> Quiz:
         quiz = Quiz(**data.dict(), owner=user)
         return await quiz.insert()
     
@@ -23,7 +23,7 @@ class QuizService:
         return await Quiz.find_one(Quiz.quiz_id == quiz_id)
 
     @staticmethod
-    async def update_quiz(quiz_id: UUID, data: QuizUpdate, user: User):
+    async def update_quiz(quiz_id: UUID, data: QuizCreateUpdate, user: User):
         quiz = await QuizService.retrieve_quiz(quiz_id, user)
         if data.questions:
             quiz.questions = data.questions

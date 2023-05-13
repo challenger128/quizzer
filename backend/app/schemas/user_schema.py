@@ -16,8 +16,3 @@ class UserOut(BaseModel):
     first_name: Optional[str]
     last_name: Optional[str]
     disabled: Optional[bool] = None
-
-
-class UserUpdate(BaseModel):
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
