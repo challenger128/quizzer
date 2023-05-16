@@ -1,5 +1,4 @@
 from typing import List, Optional
-from datetime import datetime
 from uuid import UUID, uuid4
 from beanie import Document, Indexed, Link
 from pydantic import Field
@@ -12,7 +11,7 @@ class Quiz(Document):
     title: Indexed(str)
     description: Optional[str]
     questions: List[QuizQuestion]
-    is_active: bool = True
+    is_active: bool
     owner: Link[User]
 
     def __repr__(self) -> str:
@@ -29,9 +28,24 @@ class Quiz(Document):
             return self.quiz_id == other.quiz_id
         return False
        
+
 class QuizResult(Document):
-    quiz_id: Link[Quiz]
-    username: str
-    user_answers: List[int]
-    correct_answers: List[int]
-    score: Indexed(int)
+    result_id: UUID = Field(default_factory=uuid4, unique=True)
+    quiz_id: UUID
+    name: Indexed(str)
+    chosen_options: List[int]
+    score: Indexed(float)
+
+    def __repr__(self) -> str:
+        return f"Quiz result {str(round(self.score * 100))}%"
+    
+    def __str__(self) -> str:
+        return str(round(self.score * 100)) + '%'
+    
+    def __hash__(self) -> str:
+        return hash(self.name)
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, QuizResult):
+            return self.result_id == other.result_id
+        return False

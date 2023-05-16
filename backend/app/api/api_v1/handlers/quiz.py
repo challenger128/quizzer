@@ -22,7 +22,11 @@ async def create_quiz(data: QuizCreateUpdate, current_user: User = Depends(get_c
 async def retrieve(quiz_id: UUID, current_user: User = Depends(get_current_user)):
     return await QuizService.retrieve_quiz(quiz_id, current_user)
 
-@quiz_router.put('/{quiz.id}', summary="Update quiz by quiz_id", response_model=QuizOut)
+@quiz_router.get('/external/{quiz.id}', summary="Get an external part of quiz by its id", response_model=QuizOut)
+async def retrieve_external(quiz_id: UUID):
+    return await QuizService.retrieve_quiz(quiz_id)
+
+@quiz_router.put('/{quiz.id}', summary="Update quiz by quiz_id", response_model=Quiz)
 async def update(quiz_id: UUID, data: QuizCreateUpdate, current_user: User = Depends(get_current_user)):
     return await QuizService.update_quiz(quiz_id, data, current_user)
 

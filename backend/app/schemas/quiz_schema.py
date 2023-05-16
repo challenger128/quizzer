@@ -1,10 +1,9 @@
 from uuid import UUID
-from typing import List, Optional
-from pydantic import BaseModel, Field, root_validator
+from typing import List
+from pydantic import BaseModel, Field
 from app.schemas.question_schema import QuizQuestion, QuizQuestionOut
 
 
-#TODO: add duration
 class QuizCreateUpdate(BaseModel):
     title: str = Field(..., title="Title", min_length=1, max_length=255)
     description: str = Field(..., title="Description", min_length=1, max_length=1023)
