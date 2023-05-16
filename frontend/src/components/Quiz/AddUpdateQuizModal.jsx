@@ -1,4 +1,3 @@
-//TODO: Add better validation
 import React, { useState } from "react";
 import {
   Modal,
@@ -50,7 +49,39 @@ const AddUpdateQuizModal = ({
       is_active: data.is_active,
       questions,
     };
+
     try {
+
+      if (questions.length === 0) {
+        throw new Error("Необходимо добавить хотя бы один вопрос");
+      }
+
+    const hasEmptyQuestion = questions.some(
+      (question) => question.question_text === ""
+    );
+
+    if (hasEmptyQuestion){
+      throw new Error("Введите текст для всех вопросов")
+    }
+    
+      // Валидация правильных ответов для каждого вопроса
+    const hasInvalidAnswer = questions.some(
+      (question) => question.correct_ans === null
+    );
+    
+    if (hasInvalidAnswer) {
+      throw new Error("Выберите правильный ответ для каждого вопроса");
+    }
+
+    // Валидация наличия ответов для каждого вопроса
+    const hasEmptyAnswer = questions.some((question) =>
+      question.options.some((option) => option.trim() === "")
+    );
+    
+    if (hasEmptyAnswer) {
+      throw new Error("Введите ответы для каждого вопроса");
+    }
+
       if (quizToUpdate) {
         await axiosInstance.put(`quizzes/{quiz.id}?quiz_id=${quizId}`, quizData);
         toast({
@@ -74,7 +105,7 @@ const AddUpdateQuizModal = ({
       onClose();
     } catch (err) {
         toast({
-            title: "Что-то пошло не так, попробуйте снова",
+            title: err.message,
             status: "error",
             duration: 1500,
             isClosable: true,
@@ -138,6 +169,10 @@ const AddUpdateQuizModal = ({
                 </FormControl>
                 <FormControl mb={3}>
                     <FormLabel>Вопросы</FormLabel>
+                    {questions.length === 0 && (
+  <span style={{ color: "rgb(245, 101, 101)" }}>Добавьте хотя бы один вопрос</span>
+)}
+
                         {questions.map((question, index) => (
                     <VStack key={index} mb={4}>
                         <HStack mb={2}>
@@ -148,7 +183,6 @@ const AddUpdateQuizModal = ({
                         <FormLabel>Текст вопроса</FormLabel>
                         <Input value={question.question_text} onChange={(e) => handleQuestionChange(index, "question_text", e.target.value)}/> 
                     </FormControl>
-                    
                     {question.options.map((option, optionIndex) => (
     <FormControl key={optionIndex}>
         <FormLabel>Вариант {optionIndex + 1}</FormLabel>
