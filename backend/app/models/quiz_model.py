@@ -32,6 +32,7 @@ class Quiz(Document):
 class QuizResult(Document):
     result_id: UUID = Field(default_factory=uuid4, unique=True)
     quiz_id: UUID
+    quiz_owner: Link[User]
     name: Indexed(str)
     chosen_options: List[int]
     score: Indexed(float)
