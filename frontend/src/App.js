@@ -8,6 +8,8 @@ import { Authenticated } from './components/Auth/Authenticated';
 import { NavBar } from './components/Navbar/NavBar';
 import { QuizList } from './components/Quiz/QuizList';
 import { QuizDetail } from './components/Quiz/QuizDetail';
+import Process from './components/Quiz/Process';
+
 function App() {
   return (
     <>
@@ -27,7 +29,11 @@ function App() {
         </Route>
         <Route path="/:quizId" element={
           <Authenticated><QuizDetail></QuizDetail></Authenticated>}>
-          </Route>
+        </Route>
+        <Route path="/process/:quizId" element={
+          <Process></Process>
+        }>
+        </Route>
         <Route path="*" element={<Navigate to="/"></Navigate>}></Route>
       </Routes>
         )
