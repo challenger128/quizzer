@@ -16,67 +16,64 @@ import {
   import { useEffect, useRef, useState } from "react";
   import { useNavigate, useParams } from "react-router-dom";
   import axiosInstance from "../../services/axios";
-  import AddUpdateQuizModal from "./AddUpdateQuizModal"
   
-  export const QuizDetail = () => {
+  
+  export const ResultDetail = () => {
+    const [result, setResult] = useState({});
     const [quiz, setQuiz] = useState({});
     const [loading, setLoading] = useState(true);
     const isMounted = useRef(false);
-    const { quizId } = useParams();
+    const { resultId } = useParams();
     const navigate = useNavigate();
     const toast = useToast();
     const background = useColorModeValue("gray.300", "gray.600");
-  
     
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
+  
     useEffect(() => {
       if (isMounted.current) return;
-      fetchQuiz();
+      fetchResult();
       isMounted.current = true;
-    }, [quizId]);
+    }, [resultId]);
   
-    const fetchQuiz = () => {
-      setLoading(true);
-      axiosInstance
-        .get(`quizzes/{quiz.id}?quiz_id=${quizId}`)
-        .then((res) => {
-          setQuiz(res.data);
-            console.log(res.data);
-        })
-        .catch((error) => console.error(error))
-        .finally(() => {
+    const fetchResult = async () => {
+        setLoading(true);
+        try {
+          const resultResponse = await axiosInstance.get(`results/{result.id}?result_id=${resultId}`);
+          const resultData = resultResponse.data;
+          setResult(resultData);
+          console.log(resultData);
+      
+          const quizResponse = await axiosInstance.get(`quizzes/{quiz.id}?quiz_id=${resultData.quiz_id}`);
+          const quizData = quizResponse.data;
+          setQuiz(quizData);
+          console.log(quizData);
+      
           setLoading(false);
-        });
-    };
-  
-    const deleteQuiz = () => {
+        } catch (error) {
+          console.error(error);
+          setLoading(false);
+        }
+      };
+
+    const deleteResult = () => {
       setLoading(true);
       axiosInstance 
-        .delete(`quizzes/{quiz.id}?quiz_id=${quizId}`)
+        .delete(`results/{result.id}?result_id=${resultId}`)
         .then(() => {
           toast({
-            title: "Тест успешно удален",
+            title: "Результат успешно удален",
             status: "success",
             isClosable: true,
             duration: 1500,
           });
-          navigate("/");
+          navigate(`/results/${result.quiz_id}`);
         })
         .catch((err) => {
             
-          console.error(quizId)
+          console.error(resultId)
           console.error(err);
           toast({
-            title: "Невозможно удалить тест",
+            title: "Невозможно удалить результат",
             status: "error",
             isClosable: true,
             duration: 2000,
@@ -85,27 +82,7 @@ import {
         .finally(() => setLoading(false));
     };
   
-    const handleCopyLink = () => {
-      const quizLink = `${window.location.origin}/process/${quizId}`;
-  
-      navigator.clipboard.writeText(quizLink).then(() => {
-        toast({
-          title: "Ссылка на тест скопирована",
-          status: "success",
-          isClosable: true,
-          duration: 1500,
-        });
-      }).catch(() => {
-        toast({
-          title: "Не удалось скопировать ссылку на тест",
-          status: "error",
-          isClosable: true,
-          duration: 1500,
-        });
-      });
-    };
-  
-
+    
     if (loading) {
       return (
         <Container mt={6}>
@@ -127,7 +104,7 @@ import {
         <Container mt={6}>
           <Button
             colorScheme="gray"
-            onClick={() => navigate("/", { replace: true })}
+            onClick={() => navigate(`/results/${result.quiz_id}`, { replace: true })}
           >
             ↩️ Назад
           </Button>
@@ -156,31 +133,48 @@ import {
               </Box>
             </AccordionButton>
             <AccordionPanel pb={4}>
-              <VStack alignItems="stretch">
-                {question.options.map((option, optionIndex) => (
-                  <Box key={optionIndex} p={2} bg={optionIndex === question.correct_ans ? "green.200" : "gray.400"}>
-                    {option}
-                  </Box>
-                ))}
-              </VStack>
-            </AccordionPanel>
+  <VStack alignItems="stretch">
+    {question.options.map((option, optionIndex) => {
+      const isIncorrectAnswer =
+        result.chosen_options[index] !== question.correct_ans &&
+        result.chosen_options[index] === optionIndex;
+      const isSelectedAnswer =
+        result.chosen_options[index] >= 0 && result.chosen_options[index] === optionIndex;
+      return (
+        <Box
+          key={optionIndex}
+          p={2}
+          bg={
+            isIncorrectAnswer
+              ? "red.200"
+              : optionIndex === question.correct_ans
+              ? "green.200"
+              : "gray.400"
+          }
+          boxShadow={
+            isSelectedAnswer && result.chosen_options[index] >= 0
+              ? "0 0 0 2px rgb(16,52,166)"
+              : "none"
+          }
+          borderRadius="md"
+        >
+          {option}
+        </Box>
+      );
+    })}
+  </VStack>
+</AccordionPanel>
+
+
+
           </AccordionItem>
         ))}
       </Accordion>
-          
-      
-      <Button w="100%" colorScheme="teal" onClick={handleCopyLink} mt={3}>🔗 Скопировать ссылку на тест</Button>
-
-      
-      <Button w="100%" colorScheme="blue" onClick={() => navigate(`/results/${quizId}`, { replace: true })} mt={3}>📊 Результаты</Button>            
-
-      <Button w="100%" colorScheme="purple" onClick={handleOpenModal} mt={3}>🔄 Обновить тест</Button>
-      <AddUpdateQuizModal isOpen={isModalOpen} onClose={handleCloseModal} quizToUpdate={quiz} quizId={quizId} onSuccess={fetchQuiz}/>
           <Button
             isLoading={loading}
             colorScheme="red"
             width="100%"
-            onClick={deleteQuiz}
+            onClick={deleteResult}
             mt={3}
           >
           🗑️ Удалить 

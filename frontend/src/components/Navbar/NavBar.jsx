@@ -29,7 +29,7 @@ export const NavBar = () => {
         <Stack direction="row" align="center" spacing={4}>
           <ThemeToggler size="lg" />
           <Button onClick={logout} colorScheme="green">
-            Выйти
+          🚪 Выйти
           </Button>
         </Stack>
       </Flex>

@@ -1,26 +1,28 @@
 import { Box, Button, Center, Container, Spinner, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "../../services/axios";
-import { QuizCard } from "./QuizCard";
-import AddUpdateQuizModal from './AddUpdateQuizModal';
+import { ResultCard } from "./ResultCard";
+import { useNavigate, useParams } from "react-router-dom";
 
-export const QuizList = () => {
-  const [quizzes, setQuizzes] = useState([]);
+export const ResultList = () => {
+  const {quizId} = useParams();
+  const navigate = useNavigate();
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const isMounted = useRef(false);
 
   useEffect(() => {
     if (isMounted.current) return;
-    fetchQuizzes();
+    fetchResults();
     isMounted.current = true;
   }, []);
 
-  const fetchQuizzes = () => {
+  const fetchResults = () => {
     setLoading(true);
     axiosInstance
-      .get("/quizzes/")
+      .get(`results/{quiz.id}?quiz_id=${quizId}`)
       .then((res) => {
-        setQuizzes(res.data);
+        setResults(res.data);
       })
       .catch((error) => {
         console.error(error);
@@ -30,20 +32,8 @@ export const QuizList = () => {
       });
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
   return (
     <Container mt={9}> 
-          <Button w="100%" colorScheme="green" onClick={handleOpenModal}>➕ Добавить тест</Button>
-      <AddUpdateQuizModal isOpen={isModalOpen} onClose={handleCloseModal} onSuccess={fetchQuizzes}/>
       {loading ? (
         <Center mt={6}>
           <Spinner
@@ -55,9 +45,16 @@ export const QuizList = () => {
           />
         </Center>
       ) : (
+                
         <Box mt={6}>
-          {quizzes?.map((quiz) => (
-            <QuizCard quiz={quiz} key={quiz.id} />
+        <Button
+            colorScheme="gray"
+            onClick={() => navigate(`/${quizId}`, { replace: true })}
+          >
+            ↩️ Назад
+          </Button>
+          {results?.map((result) => (
+            <ResultCard result={result} key={result.id} />
           ))}
         </Box>
       )}

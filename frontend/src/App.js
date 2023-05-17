@@ -9,6 +9,8 @@ import { NavBar } from './components/Navbar/NavBar';
 import { QuizList } from './components/Quiz/QuizList';
 import { QuizDetail } from './components/Quiz/QuizDetail';
 import Process from './components/Quiz/Process';
+import { ResultList } from './components/Quiz/ResultList';
+import {ResultDetail} from './components/Quiz/ResultDetail'
 
 function App() {
   return (
@@ -29,6 +31,12 @@ function App() {
         </Route>
         <Route path="/:quizId" element={
           <Authenticated><QuizDetail></QuizDetail></Authenticated>}>
+        </Route>
+        <Route path="/results/:quizId" element={
+          <Authenticated><ResultList></ResultList></Authenticated>}>
+        </Route>
+        <Route path="/result_details/:resultId" element={
+          <Authenticated><ResultDetail></ResultDetail></Authenticated>}>
         </Route>
         <Route path="/process/:quizId" element={
           <Process></Process>

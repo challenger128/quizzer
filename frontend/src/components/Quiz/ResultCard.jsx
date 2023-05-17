@@ -1,7 +1,7 @@
 import { Badge, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 
-export const QuizCard = ({ quiz }) => {
+export const ResultCard = ({ result }) => {
   const navigate = useNavigate();
   return (
     <Flex
@@ -17,11 +17,11 @@ export const QuizCard = ({ quiz }) => {
         cursor: "pointer",
         transform: "translateY(-3px)",
       }}
-      onClick={() => navigate(`/${quiz.quiz_id}`, { replace: true })}
+      onClick={() => navigate(`/result_details/${result.result_id}`, { replace: true })}
     >
-      <Text>{quiz.title}</Text>
-      <Badge colorScheme={quiz.is_active ? "green" : "red"}>
-        {quiz.is_active ? "✅ Тест доступен" : "❌ Тест закрыт"}
+      <Text>{result.name}</Text>
+      <Badge colorScheme={Math.round(result.score * 100) > 40 ? "green" : "red"}>
+        {Math.round(result.score * 100)}%
       </Badge>
     </Flex>
   );

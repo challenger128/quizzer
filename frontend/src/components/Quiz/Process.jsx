@@ -14,6 +14,7 @@ import {
 } from "@chakra-ui/react";
 import axiosInstance from "../../services/axios";
 import { useParams } from "react-router-dom";
+import { ThemeToggler } from "../Theme/ThemeToggler";
 
 const QuizForm = () => {
   const { quizId } = useParams();
@@ -146,6 +147,9 @@ const QuizForm = () => {
   return (
     <Center>
     <Box>
+    <Flex justify="flex-end" mb={4}>
+      <ThemeToggler size="lg" />
+    </Flex>
       <form onSubmit={handleSubmit}>
         <FormControl mb={4}>
           <FormLabel>Имя</FormLabel>
@@ -170,6 +174,7 @@ const QuizForm = () => {
                     : "gray"
                 }
                 mr={2}
+                w="100%"
               >
                 {option}
               </Button>
@@ -177,7 +182,7 @@ const QuizForm = () => {
             </VStack>
           </FormControl>
         ))}
-        <Button type="submit" colorScheme="blue">
+        <Button w="100%" type="submit" colorScheme="teal" mt={2}>
           Отправить
         </Button>
       </form>
